@@ -1,0 +1,25 @@
+name: Bounty verification
+
+on:
+  push:
+    branches:
+      - ci/verify-inline-system-note-translation
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+      - name: Check formatting
+        run: ./gradlew ktlintCheck
+      - name: Run static analysis
+        run: ./gradlew detekt
+      - name: Run app unit tests
+        run: ./gradlew :app:testAospDebugUnitTest
+      - name: Compile AOSP app
+        run: ./gradlew :app:compileAospDebugKotlin
